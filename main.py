@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
+import json
 
 DATA_FILE_PATH = None
 
@@ -38,32 +39,31 @@ def new_password_to_password_entry():
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
 
-def create_log():
-    return [str(website_entry.get()), str(email_entry.get()), str(password_entry.get())]
+def check_and_log_data():
+    website = str(website_entry.get())
+    email = str(email_entry.get())
+    password = str(password_entry.get())
 
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
-def check_if_log_in_data():
-    current_log = create_log()
-    print(len(current_log[1]))
-    current_list = []
-    with open("users_data.txt", "r") as f:
-        for line in f:
-            striped_line = line.strip()
-            converted_line = striped_line.split(" | ")
-            current_list.append(converted_line)
-    if len([i for i in current_log if len(i) == 0]) > 0:
+    if len(website) == 0 or len(website) == 0:
         messagebox.showwarning(title="Warning", message=f"Not all data has been completed!")
-    elif current_log not in current_list:
-        is_ok = messagebox.askokcancel(title="Information", message=f"These are current data u would like to store: \n{current_log[0]} \n{current_log[1]} \n{current_log[2]}")
-        if is_ok:
-            add_log_to_data(current_log)
+    else:
+        with open("users_data.json", "r") as f:
+            data = json.load(f)
+            data.update(new_data)
+        with open("users_data.json", "w") as f:
+            json.dump(data, f, indent=4)
             password_entry.delete(0, END)
             website_entry.delete(0, END)
 
 
-def add_log_to_data(log):
-    with open("users_data.txt", "a") as f:
-        f.write(f"\n{log[0]} | {log[1]} | {log[2]}")
+
 # ---------------------------- UI SETUP ------------------------------- #
 
 window = Tk()
@@ -99,7 +99,7 @@ password_entry.grid(column=1, row=3, sticky="nsew")
 generate_password_button = Button(text="Generate Password", bg=BG, command=lambda: new_password_to_password_entry())
 generate_password_button.grid(column=2, row=3, padx=0, sticky="nsew")
 
-add_button = Button(text="Add", bg=BG, width=36, command=lambda: check_if_log_in_data())
+add_button = Button(text="Add", bg=BG, width=36, command=lambda: check_and_log_data())
 add_button.grid(column=1, row=4, columnspan=2, sticky="nsew")
 
 
