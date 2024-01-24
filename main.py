@@ -54,13 +54,20 @@ def check_and_log_data():
     if len(website) == 0 or len(website) == 0:
         messagebox.showwarning(title="Warning", message=f"Not all data has been completed!")
     else:
-        with open("users_data.json", "r") as f:
-            data = json.load(f)
-            data.update(new_data)
-        with open("users_data.json", "w") as f:
-            json.dump(data, f, indent=4)
+        try:
+            with open("users_data.json", "r") as f:
+                data = json.load(f)
+                data.update(new_data)
+            with open("users_data.json", "w") as f:
+                json.dump(data, f, indent=4)
+
+        except FileNotFoundError:
+            with open("users_data.json", "w") as f:
+                json.dump(new_data, f, indent=4)
+        finally:
             password_entry.delete(0, END)
             website_entry.delete(0, END)
+
 
 
 
@@ -98,6 +105,9 @@ password_entry.grid(column=1, row=3, sticky="nsew")
 
 generate_password_button = Button(text="Generate Password", bg=BG, command=lambda: new_password_to_password_entry())
 generate_password_button.grid(column=2, row=3, padx=0, sticky="nsew")
+
+search_website = Button(text="Search", bg=BG, command=lambda: new_password_to_password_entry())
+search_website.grid(column=2, row=1, padx=0, sticky="nsew")
 
 add_button = Button(text="Add", bg=BG, width=36, command=lambda: check_and_log_data())
 add_button.grid(column=1, row=4, columnspan=2, sticky="nsew")
