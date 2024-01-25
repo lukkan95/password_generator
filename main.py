@@ -69,6 +69,19 @@ def check_and_log_data():
             website_entry.delete(0, END)
 
 
+# ---------------------------- SEARCH IN DATA ------------------------------- #
+
+def search_website_in_data(website_name):
+    try:
+        with open("users_data.json", "r") as f:
+            data = json.load(f)
+            if str(website_name) in data:
+                messagebox.showinfo(message=f"Email: {data[str(website_name)]['email']}\nPassword: {data[str(website_name)]['password']}")
+            else:
+                messagebox.showinfo(message=f"File not found")
+    except FileNotFoundError:
+        messagebox.showwarning(message=f"Couldn't find json data file.")
+
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -106,7 +119,7 @@ password_entry.grid(column=1, row=3, sticky="nsew")
 generate_password_button = Button(text="Generate Password", bg=BG, command=lambda: new_password_to_password_entry())
 generate_password_button.grid(column=2, row=3, padx=0, sticky="nsew")
 
-search_website = Button(text="Search", bg=BG, command=lambda: new_password_to_password_entry())
+search_website = Button(text="Search", bg=BG, command=lambda: search_website_in_data(str(website_entry.get()).capitalize()))
 search_website.grid(column=2, row=1, padx=0, sticky="nsew")
 
 add_button = Button(text="Add", bg=BG, width=36, command=lambda: check_and_log_data())
